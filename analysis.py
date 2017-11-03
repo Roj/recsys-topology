@@ -28,7 +28,7 @@ lens = mapper.fit_transform(
 )
 graph = mapper.map(
     lens,
-    useritem,
+    useritem.T,
     nr_cubes=15,
     overlap_perc=0.2
 )
