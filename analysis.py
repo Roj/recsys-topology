@@ -1,6 +1,8 @@
 import km
 import sklearn as sk
 import numpy as np   
+import csv
+import pandas as pd
 
 data = np.genfromtxt("ml-100k/u1.base", delimiter="\t")
 
@@ -19,12 +21,19 @@ useritem = useritem/rowsums[:, np.newaxis]
 
 del data
 
+# Search for labels (movie names)
+labels = []
+with open("ml-100k/u.item", encoding = "ISO-8859-1") as labelsfile:
+	labelscsv = csv.reader(labelsfile, delimiter="|")
+	for label in labelscsv:
+		labels.append(label[1])
+
 # Mapper
 mapper = km.KeplerMapper(verbose = 2)
 # Temporary test: transpose the matrix to see how each movie is projected
 lens = mapper.fit_transform(
     useritem.T, 
-    projection=sk.decomposition.PCA(n_components=1)
+    projection=sk.decomposition.PCA(n_components=1) 
 )
 graph = mapper.map(
     lens,
@@ -33,4 +42,4 @@ graph = mapper.map(
     overlap_perc=0.2
 )
 
-mapper.visualize(graph, path_html="output.html")
+mapper.visualize(graph, path_html="output.html", custom_tooltips=np.array(labels))
