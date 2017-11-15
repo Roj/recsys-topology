@@ -4,3 +4,7 @@ km.py
 
 .*.swp
 *.swp
+
+*.pyc
+__pycache__
+*.html

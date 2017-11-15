@@ -1,9 +1,9 @@
 #!/bin/bash
 
 function check_download {
-	if [ $? -eq 0 ]; then 
-		echo "Download OK" 
-	else 
+	if [ $? -eq 0 ]; then
+		echo "Download OK"
+	else
 		echo "There were problems downloading the file."
 		exit
 	fi
@@ -11,10 +11,10 @@ function check_download {
 # Python dependencies
 # Most are installed with pip3. However, Kepler Mapper is not there, so we
 # need to manually fetch it.
-if [ ! -f "km.py" ]; then 
+if [ ! -f "km.py" ]; then
 	echo "Kepler Mapper not found"
 	echo "Downloading Kepler Mapper"
-	wget https://raw.githubusercontent.com/MLWave/kepler-mapper/master/km.py
+	wget -O km.py https://raw.githubusercontent.com/MLWave/kepler-mapper/468dde0e6d341cf6c233de34caf661381243c6bd/kmapper/kmapper.py
 	check_download
 else
 	echo "Kepler Mapper found"

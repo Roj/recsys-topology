@@ -1,6 +1,6 @@
 import km
 import sklearn as sk
-import numpy as np   
+import numpy as np
 import csv
 import sys
 import argparse
@@ -10,16 +10,17 @@ import argparse
 parser = argparse.ArgumentParser(
 	description = "Topological Analysis of Recommender Systems"
 )
+
 parser.add_argument(
-	"-l", "--label", 
-	default = "N", 
+	"-l", "--label",
+	default = "N",
 	choices = ["N", "G"],
 	help = "N: names\n G: genres",
 	dest = "label"
 )
 parser.add_argument(
-	"-o", "--output", 
-	default = "output.html", 
+	"-o", "--output",
+	default = "output.html",
 	dest = "output"
 )
 config = parser.parse_args(sys.argv[1:])
@@ -33,7 +34,7 @@ M = int(np.max(data[:, 1])) #Number of movies
 
 useritem = np.zeros((U,M))
 for row in data:
-    useritem[int(row[0])-1,int(row[1])-1]=row[2]
+	useritem[int(row[0])-1,int(row[1])-1]=row[2]
 
 # Normalize the matrix such that rows sum to 1
 rowsums = useritem.sum(axis = 1)
@@ -46,7 +47,11 @@ genres = []
 with open("ml-100k/u.genre", encoding = "ISO-8859-1") as genresfile:
 	genrescsv = csv.reader(genresfile, delimiter="|")
 	for genre in genrescsv:
-		genres.append(genre[0])
+		try:
+			genres.append(genre[0])
+		except IndexError as e:
+			pass
+
 
 # Search for labels (movie names or movie genres)
 labels = []
@@ -62,19 +67,19 @@ with open("ml-100k/u.item", encoding = "ISO-8859-1") as labelsfile:
 mapper = km.KeplerMapper(verbose = 2)
 # Temporary test: transpose the matrix to see how each movie is projected
 lens = mapper.fit_transform(
-    useritem.T, 
-    projection= sk.decomposition.PCA(n_components=1) 
-)
+	useritem.T,
+	projection= sk.decomposition.PCA(n_components=1)
+)   
 
 graph = mapper.map(
-    lens,
-    useritem.T,
-    nr_cubes=15,
-    overlap_perc=0.2
+	lens,
+	useritem.T,
+	nr_cubes=15,
+	overlap_perc=0.2
 )
 
 mapper.visualize(
-	graph, 
-	path_html = config.output, 
+	graph,
+	path_html = config.output,
 	custom_tooltips = np.array(labels)
 )
