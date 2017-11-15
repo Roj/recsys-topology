@@ -25,7 +25,11 @@ parser.add_argument(
 )
 config = parser.parse_args(sys.argv[1:])
 
+
 data = np.genfromtxt("ml-100k/u1.base", delimiter="\t")
+for i in range(2,5+1):
+	filename = "ml-100k/u{0}.base".format(i)
+	data = np.append(data, np.genfromtxt(filename, delimiter="\t"), axis = 0)
 
 # Assume, for now, that IDs are consecutive.
 # They mostly are.
@@ -68,14 +72,16 @@ mapper = km.KeplerMapper(verbose = 2)
 # Temporary test: transpose the matrix to see how each movie is projected
 lens = mapper.fit_transform(
 	useritem.T,
+	scaler=None,
 	projection= sk.decomposition.PCA(n_components=1)
 )   
 
 graph = mapper.map(
 	lens,
 	useritem.T,
-	nr_cubes=15,
-	overlap_perc=0.2
+	nr_cubes=100,
+	overlap_perc=0.3,
+	clusterer=sk.cluster.DBSCAN(eps=0.8, min_samples=3, metric="cosine", algorithm="brute")
 )
 
 mapper.visualize(
